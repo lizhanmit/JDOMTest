@@ -1,7 +1,9 @@
 package com.imooc.jdomtest;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +15,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 import com.imooc.entity.Book;
 
@@ -20,7 +24,10 @@ public class JDOMTest {
 	// 用来保存遍历出的book对象
 	private static ArrayList<Book> booksList = new ArrayList<Book>();
 	
-	public static void main(String[] args) {
+	/**
+	 * 解析xml
+	 */
+	private void parseXML() {
 		// 进行对book.xml文件的JDOM解析
 		// 准备工作
 		// 1.创建一个SAXBuilder的对象
@@ -103,8 +110,49 @@ public class JDOMTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * 生成xml
+	 */
+	private void createXML() {
+		// 1.生成一个根节点rss
+		Element rss = new Element("rss");
+		// 2.为根节点添加属性
+		rss.setAttribute("version", "2.0");
+		// 3.生成一个document对象
+		Document document = new Document(rss);
+		// 4.生成子节点
+		Element channel = new Element("channel");
+		// 5.将子节点添加到根节点中
+		rss.addContent(channel);
+		// 6.生成二级子节点
+		Element title = new Element("title");
+		// 7.设置二级子节点的内容
+		title.setText("国内最新新闻");
+		// 8.将二级子节点添加到子节点中
+		channel.addContent(title);
+		// 9.设置生成xml的格式
+		Format format = Format.getCompactFormat();
+		format.setIndent("");
+		format.setEncoding("GBK");
 		
-
+		// 10.创建XMLOutputter对象
+		XMLOutputter outputter = new XMLOutputter(format);
+		try {
+			// 11.利用outputter将document对象转换成xml文档
+			outputter.output(document, new FileOutputStream(new File("rssnews.xml")));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		new JDOMTest().createXML();
 	}
 
 }
